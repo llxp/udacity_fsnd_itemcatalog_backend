@@ -1,76 +1,97 @@
-# system/framework includes
-# --------------------------------
-from flask import Flask, json
-from flask import jsonify
-from flask import request
-from flask import url_for
-from flask import abort
-from flask import g
-# --------------------------------
-# --------------------------------
-from flask_httpauth import HTTPBasicAuth
-#--------------------------------
-from flask_jsontools import DynamicJSONEncoder
-from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-# --------------------------------
-from flask_cors import CORS, cross_origin
-from Models import Category
+import os
+import random
+import string
 
+import httplib2
+import requests
+from flask import request, json, make_response, Response, send_from_directory
+from flask_cors import cross_origin
 
-#global flask object
-app = Flask(__name__)
-CORS(app)
-app.json_encoder = DynamicJSONEncoder
+from Models import CatalogCategory, CatalogItem, User
 
-#global flask authentication object
-auth = HTTPBasicAuth()
+from app_init import app, db
 
-#init db session object
-engine = create_engine('sqlite:///users.db')
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+# init db session object
+# engine = create_engine('sqlite:///itemcatalog.db')
+# Base.metadata.bind = engine
+# DBSession = sessionmaker(bind=engine)
+# session = scoped_session(DBSession())
+from authentication import authentication_blueprint
 
+db.create_all()
+
+app.config['SESSION_TYPE'] = 'SESSION_SQLALCHEMY'
+app.secret_key = os.urandom(24)
+
+CLIENT_ID = json.loads(
+    open('client_secrets.json', 'r').read())['web']['client_id']
+APPLICATION_NAME = "Item Catalog"
+
+session_tokens = []
+
+app.register_blueprint(authentication_blueprint)
 
 @app.route('/')
 def hello_world():
     return 'Hello World!'
 
 
-@app.route('/user/login')
-def login():
-    return 'login'
+#@app.route("/<path:path>")
+#def root(path):
+#    print(os.path.join(os.getcwd(), "..\\frontend\\dist\\ItemCatalog\\index.html"), path)
+#    return send_from_directory("C:\\Users\\llxp\\source\\repos\\Udacity_Project_ItemCatalog\\frontend\\dist\\ItemCatalog\\index.html", path)
 
 
-@app.route('/user/logout')
-def logout():
-    return 'logout'
-
-
-@app.route('/user/gconnect')
-def gconnect():
-    return 'gconnect'
-
-
-@app.route('/user/register')
-def registerUser():
-    return 'user registration'
-
-
-@app.route('/categories')
+@app.route('/api/categories')
 @cross_origin()  # put there for debugging purposes
 def categories():
-    category1 = Category()
+    category1 = CatalogCategory()
+    category1.id = 1
     category1.category = "Category1"
-    category1.path = "/categories/1"
 
-    category2 = Category()
+    category2 = CatalogCategory()
+    category2.id = 2
     category2.category = "Category2"
-    category2.path = "/categories/2"
 
+    print("/categories")
     return json.dumps([category1, category2])
 
 
+@app.route('/api/catalog/item/<int:item_id>')
+@cross_origin()  # put there for debugging purposes
+def item(item_id):
+    current_item = CatalogItem.query.filter_by(id=item_id).first()
+    if current_item is None:
+        return "{}"
+    return json.dumps(current_item)
+
+
+def check_login(token):
+    return True
+
+
+@app.route('/api/catalog/item', methods=['POST'])
+@cross_origin()  # put there for debugging purposes
+def add_item():
+    token = request.form.get('token')
+    title = request.form.get('title')
+    description = request.form.get('description')
+    category_id = request.form.get('category_id')
+    if (
+            token is not None and
+            title is not None and
+            description is not None and
+            category_id is not None):
+                if check_login(token) is True:
+                    new_item = CatalogItem()
+                    new_item.title = title
+                    new_item.description = description
+                    new_item.category = category_id
+                    db.session.add(new_item)
+
+
+FLASK_APP = app
 if __name__ == '__main__':
+    db.create_all()
+    app.debug = True
     app.run()
