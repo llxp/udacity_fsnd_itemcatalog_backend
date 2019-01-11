@@ -184,6 +184,7 @@ def gdisconnect():
     if current_session is not None and current_session.logged_in:
         access_token: str = login_session[session_token].access_token
         current_session: LoginSessionItem = login_session[session_token]
+        current_session.logged_in = False
         print('In gdisconnect access token is %s' % access_token)
         print('User name is: ')
         print(current_session.username)
@@ -223,11 +224,14 @@ def gdisconnect():
 @authentication_blueprint.route('/api/user/all_sessions', methods=['GET'])
 def enumerate_session_tokens():
     session_token = request.args.get('session_token')
-    username = login_session[session_token].username
     tokens = []
-    for x in login_session:
-        if x.username == username and x.logged_in is True:
-            tokens.append(x.session_token)
+    if login_session[session_token] is not None:
+        username = login_session[session_token].username
+        for x in login_session.keys():
+            session : LoginSessionItem = login_session[x]
+            if session is not None:
+                if session.username == username and session.logged_in is True:
+                    tokens.append(session.session_token)
     return json.dumps(tokens)
 
 
@@ -247,3 +251,9 @@ def userinfo():
     response.headers['Content-Type'] = 'application/json'
     return response
 
+
+def check_login(session_token):
+    current_session : LoginSessionItem = login_session[session_token]
+    if current_session is not None:
+        return current_session.logged_in
+    return False

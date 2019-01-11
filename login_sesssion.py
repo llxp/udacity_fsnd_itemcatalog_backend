@@ -25,4 +25,3 @@ class LoginSession:
 
     def keys(self):
         return self.session_tokens.keys()
-

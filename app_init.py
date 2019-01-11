@@ -15,3 +15,5 @@ CORS(app)
 app.json_encoder = DynamicJSONEncoder
 app.secret_key = os.urandom(24)
 SqlAlchemySessionInterface(app=app, db=db, table='session', permanent=True, key_prefix='session_')
+
+APPLICATION_NAME = "Item Catalog"
