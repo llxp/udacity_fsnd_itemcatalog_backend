@@ -15,15 +15,6 @@ class CatalogCategory(app_init.db.Model):
     category: str = Column(String(255), unique=False, nullable=False)
 
 
-class User(app_init.db.Model):
-    __tablename__: str = "User"
-    id: int = Column(Integer, primary_key=True)
-    email: str = Column(String(1024), unique=True, nullable=False)
-    username: str = Column(String(32), index=True)
-    picture: str = Column(String)
-    userinfo_url: str = Column(String)
-
-
 class CatalogItem(app_init.db.Model):
     __tablename__: str = "CatalogItem"
     id: int = Column(Integer, primary_key=True)
@@ -32,6 +23,14 @@ class CatalogItem(app_init.db.Model):
     lastAccessed = Column(DateTime)
     category: int = Column(Integer, ForeignKey("Category.id"), nullable=False)
 
+
+class User(app_init.db.Model):
+    __tablename__: str = "User"
+    id: int = Column(Integer, primary_key=True)
+    email: str = Column(String(1024), unique=True, nullable=False)
+    username: str = Column(String(32), index=True)
+    picture: str = Column(String)
+    userinfo_url: str = Column(String)
 
 """class SessionToken(db.Model):
     __tablename__: str = "SessionToken"

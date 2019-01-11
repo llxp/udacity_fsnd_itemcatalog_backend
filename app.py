@@ -42,9 +42,10 @@ def hello_world():
 #    return send_from_directory("C:\\Users\\llxp\\source\\repos\\Udacity_Project_ItemCatalog\\frontend\\dist\\ItemCatalog\\index.html", path)
 
 
-@app.route('/api/categories')
+@app.route('/api/catalog/categories')
 @cross_origin()  # put there for debugging purposes
 def categories():
+    catalogCategories = CatalogCategory.query.all()
     category1 = CatalogCategory()
     category1.id = 1
     category1.category = "Category1"
@@ -54,7 +55,16 @@ def categories():
     category2.category = "Category2"
 
     print("/categories")
-    return json.dumps([category1, category2])
+    return json.dumps(catalogCategories)
+
+
+@app.route('/api/catalog/items/<int:category_id>')
+@cross_origin()  # put there for debugging purposes
+def items(category_id):
+    current_items = CatalogItem.query.filter_by(category=category_id).all()
+    if current_items is None:
+        return "[]"
+    return json.dumps(current_items)
 
 
 @app.route('/api/catalog/item/<int:item_id>')

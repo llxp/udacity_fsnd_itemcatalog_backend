@@ -6,14 +6,18 @@ from flask import json, request, make_response, flash, Blueprint, Response
 import string
 import random
 #from flask import session as login_session
-
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 
 from flask_sqlalchemy import xrange
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 
-from Models import User
 from app_init import app, db
 from login_sesssion import LoginSession, LoginSessionItem
+from Models import User
+
+
+
 
 app.config['SESSION_TYPE'] = 'SESSION_SQLALCHEMY'
 SESSION_TYPE = 'SESSION_SQLALCHEMY'
@@ -22,9 +26,15 @@ CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Item Catalog"
 
-authentication_blueprint = Blueprint('authentication', __name__, template_folder='templates')
+authentication_blueprint = Blueprint(
+    'authentication',
+    __name__,
+    template_folder='templates')
 
-login_session = LoginSession()
+# create global login session for storing user information at runtime
+login_session: LoginSession = LoginSession()
+
+
 
 
 def generate_random_string():
@@ -159,6 +169,8 @@ def gconnect():
 
     current_session.logged_in = True
 
+    print("access_token: " + credentials.access_token)
+
     response = make_response(json.dumps('User sucessfully connected.'), 200)
     response.headers['Content-Type'] = 'application/json'
     return response
@@ -172,7 +184,7 @@ def gdisconnect():
     if current_session is not None and current_session.logged_in:
         access_token: str = login_session[session_token].access_token
         current_session: LoginSessionItem = login_session[session_token]
-        print('In gdisconnect access token is %s', access_token)
+        print('In gdisconnect access token is %s' % access_token)
         print('User name is: ')
         print(current_session.username)
 
@@ -188,8 +200,12 @@ def gdisconnect():
         print('result is ')
         print(result)
 
+        print("access_token: " + current_session.access_token)
+
         if result['status'] == '200':
             del login_session[session_token]
+            if login_session[session_token] is None:
+                print("session element successfully deleted.");
             response = make_response(json.dumps('Successfully disconnected.'), 200)
             response.headers['Content-Type'] = 'application/json'
             return response
