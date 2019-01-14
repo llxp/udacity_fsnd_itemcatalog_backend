@@ -1,7 +1,7 @@
 # Item Catalog Project
 
 ## SETUP ##
-
+#### To use this project you need python 3 installed ####
 Simply run:
 ```sh
 pip3 install -r requirements.txt
