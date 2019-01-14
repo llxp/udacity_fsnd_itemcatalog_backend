@@ -15,27 +15,27 @@ instead of ```python3``` command:
 ```py``` or ```python``` can also be run (if python 3 is installed)
 
 ### Setup of the authentication/authorization process ####
-please go to the google API console under https://console.developers.google.com<br/>
-There go to Credentials (On the left side menu)<br/>
-If you have already created an app there, you can reuse this app and skip to step 5.<br/>
-If you haven't created an app already or don't want to reuse the existing app:<br/>
-1. Click on the button "Create credentials":
-2. Then click on "OAuth client ID"
-3. As the "Application type" select "Web application"
-4. Enter a name for this app which you haven't used yet
-5. Under "Authorized JavaScript origins" add the host of the flask web app:
-6. If nothing was changed yet the default host will be:
+1. please go to the google API console under https://console.developers.google.com
+2. There go to Credentials (On the left side menu)
+3. If you have already created an app there, you can reuse this app and skip to step 9.
+4. If you haven't created an app already or don't want to reuse the existing app:
+5. Click on the button "Create credentials":
+6. Then click on "OAuth client ID"
+7. As the "Application type" select "Web application"
+8. Enter a name for this app which you haven't used yet
+9. Under "Authorized JavaScript origins" add the host of the flask web app:
+10. If nothing was changed yet the default host will be:
 > ```http://localhost:5000```
-7. If you also want to use some rest client like angularJS, you have to add the host of this app aswell:
+11. If you also want to use some rest client like angularJS, you have to add the host of this app aswell:
 > Angular (7/CLI) uses per default ```http://localhost:4200```
-8. Under "Authorized redirect URIs" add the redirect uri of the flask application:
-9. If nothing was changed yet the default redirect uri will be:
+12. Under "Authorized redirect URIs" add the redirect uri of the flask application:
+13. If nothing was changed yet the default redirect uri will be:
 > ```http://localhost:5000/user/gconnect```
-10. If you want to use some rest client like anguluarJS, you have to add the redirect uri aswell:
+14. If you want to use some rest client like anguluarJS, you have to add the redirect uri aswell:
 > e.g. ```http://localhost:4200/user/gconnect```
-11. Please copy your own copy of the client_secrets.json to the root directory of this project:
+15. Please copy your own copy of the client_secrets.json to the root directory of this project:
     > for this to do you have to press on the button "Download JSON" On the top and name the file "client_secrets.json".
-12. Do not forget to press on "Save" when finished editing the app in the google API console
+16. Do not forget to press on "Save" when finished editing the app in the google API console
 
 #### Setup of a rest client like AngularJS ####
 If you want to use an rest client like AngularJS here are some steps how to do this (coveres only the authenticataion process):
