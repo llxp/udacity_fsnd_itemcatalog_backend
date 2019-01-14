@@ -7,7 +7,6 @@ from sqlalchemy.ext.declarative import declarative_base
 
 import app_init
 
-# Base = declarative_base(cls=(JsonSerializableBase,))
 app_init.db.create_all()
 
 
