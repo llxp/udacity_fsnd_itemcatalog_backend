@@ -67,12 +67,12 @@ if nothing is changed, this app will be reachable on the url:
 http://localhost:5000
 
 The following actions can only be made, when logged in:<br/>
-A category can be added by pressing the plus button under the categories<br/>
-A category can be edited by pressing on the edit button under the items, when a category is selected<br/>
-A category can be deleted by going into the category edit mode and then pressing the trash button<br/>
-An new item can be added to the catalog by selecting a category and pressing the plus button under the items list<br/>
-An item can be edited by selecting an item and pressing the edit button under the description of the item<br/>
-An item can be deleted by going into the item edit mode and then pressing the trash button<br/>
+1. A category can be added by pressing the plus button under the categories
+2. A category can be edited by pressing on the edit button under the items, when a category is selected
+3. A category can be deleted by going into the category edit mode and then pressing the trash button
+4. An new item can be added to the catalog by selecting a category and pressing the plus button under the items list
+5. An item can be edited by selecting an item and pressing the edit button under the description of the item
+6. An item can be deleted by going into the item edit mode and then pressing the trash button
 
 ## LICENSE ##
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/llxp/udacity_fsnd_itemcatalog_backend/blob/master/LICENSE) file for details
