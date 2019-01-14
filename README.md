@@ -36,7 +36,7 @@ http://localhost:5000
 
 The following actions can only be made, when logged in:<br/>
 A category can be added by pressing the plus button under the categories<br/>
-A category can be edited by pressing on the edit buttoon under the items, when a category is selected<br/>
+A category can be edited by pressing on the edit button under the items, when a category is selected<br/>
 A category can be deleted by going into the edit mode and then pressing the trash button<br/>
 An new item can be added to the catalog by selecting a category and pressing the plus button under the items list<br/>
 An item can be edited by selecting an item and pressing the edit button under the description of the item<br/>
