@@ -15,10 +15,10 @@ instead of ```python3``` command:
 ```py``` or ```python``` can also be run (if python 3 is installed)
 
 ### Setup of the authentication/authorization process ####
-please go to the google API console under https://console.developers.google.com
-There go to Credentials (On the left side menu)
-If you have already created an app there, you can reuse this app and skip to step 5.
-If you haven't created an app already or don't want to reuse the existing app:
+please go to the google API console under https://console.developers.google.com<br/>
+There go to Credentials (On the left side menu)<br/>
+If you have already created an app there, you can reuse this app and skip to step 5.<br/>
+If you haven't created an app already or don't want to reuse the existing app:<br/>
 1. Click on the button "Create credentials":
 2. Then click on "OAuth client ID"
 3. As the "Application type" select "Web application"
