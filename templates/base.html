@@ -1,0 +1,43 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles -%}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link href={{url_for('static', filename='bootstrap.css')}} rel="stylesheet"/>
+    <link href={{url_for('static', filename='style.css')}} rel="stylesheet"/>
+{% endblock styles %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('static', filename='common.js')}}"></script>
+    <script src="{{url_for('static', filename='search.js')}}"></script>
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-expand navbar-dark px-4 flex-column flex-md-row bg-dark">
+    <div class="container navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="navbar-brand" href="{{url_for('item_catalog_frontend.index')}}">Home</a>
+            </li>
+        </ul>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <ul class="nav navbar-nav mx-auto">
+            </li class="nav-item"><input placeholder="search" id="searchbar" onkeyup="onKeydownSearch();"/></li>
+        </ul>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('item_catalog_frontend.login')}}">
+                {% if not success %}
+                    Login
+                {% else %}
+                    {% if session and session.picture %}<div><img src="{{ session.picture }}" width="32" height="32"/></div>{% endif %}
+                {% endif %}
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

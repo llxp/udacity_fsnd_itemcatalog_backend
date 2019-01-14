@@ -1,13 +1,15 @@
 from flask import Flask
 from flask_jsontools import JsonSerializableBase
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
+from sqlalchemy import DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
 import app_init
 
 # Base = declarative_base(cls=(JsonSerializableBase,))
 app_init.db.create_all()
+
 
 class CatalogCategory(app_init.db.Model):
     __tablename__: str = "Category"
@@ -31,18 +33,3 @@ class User(app_init.db.Model):
     username: str = Column(String(32), index=True)
     picture: str = Column(String)
     userinfo_url: str = Column(String)
-
-"""class SessionToken(db.Model):
-    __tablename__: str = "SessionToken"
-    id: int = Column(Integer, primary_key=True)
-    token: str = Column(String(255), nullable=False)
-    is_valid: bool = Column(db.Boolean(), nullable=False, default=True)
-    created = Column(db.DateTime(), nullable=False, default=db.DateTime.utcnow)
-    logged_in: bool = Column(db.Boolean(), nullable=False, default=False)
-"""
-
-# engine = create_engine('sqlite:///itemcatalog.db')
-
-
-# Base.metadata.create_all(engine)
-

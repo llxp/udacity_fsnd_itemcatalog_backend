@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('static', filename='edit_item.js')}}"></script>
+    <script src="{{url_for('static', filename='add_item.js')}}"></script>
+    <script src="{{url_for('static', filename='delete_item.js')}}"></script>
+
+    <script src="{{url_for('static', filename='edit_category.js')}}"></script>
+    <script src="{{url_for('static', filename='add_category.js')}}"></script>
+    <script src="{{url_for('static', filename='delete_category.js')}}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="d-none" id='searchResultsHeadline'>Search Results</h1>
+    <ul id="searchResults" class="nav navbar-nav nav-pills">
+    </ul>
+</div>
+<div class="vertical-center">
+    <div class="container-fluid">
+        <div class="row">
+            {# first column, showing categories #}
+            <div class="col-2">
+                <nav class="nav">
+                    <ul class="nav navbar-nav nav-pills">
+                        <h2>Item Catalog</h2>
+                        {% if categories %}
+                            {% for category in categories %}
+                                {% if selectedCategory and category.id == selectedCategory %}
+                                    <li>
+                                        <a href="{{url_for('item_catalog_frontend.category', category_id=category.id)}}"
+                                        class="active show nav-link"
+                                        aria-controls="v-pills-home"
+                                        aria-selected="true">{{category.category}}</a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a href="{{url_for('item_catalog_frontend.category', category_id=category.id)}}"
+                                        aria-controls="v-pills-home"
+                                        aria-selected="false">{{category.category}}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% if session and success %}
+                            {# the current user is logged in, so displaying a button to add a new category #}
+                            <a href="#" id="addCategoryButton" onclick='return addCategory()'><i class="fas fa-plus-square fa-lg"></i></a>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+            {# second column, showing items in the specified category #}
+            <div class="col-md-2">
+                <nav class="nav">
+                    <ul class="nav navbar-nav nav-pills">
+                        {# show a headline with the name of the current category #}
+                        {# ---------------------------------------------- #}
+                        {% if selectedCategory %}
+                            {% for category in categories %}
+                                {% if category.id == selectedCategory %}
+                                    <h2>{{category.category}}</h2>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {# or display all items as the current category #}
+                            <h2>All items</h2>
+                        {% endif %}
+                        {# ---------------------------------------------- #}
+                        
+                        {# show how many items are in the current category #}
+                        {# ---------------------------------------------- #}
+                        {% if items|length > 1 %}
+                            <h5>{{items|length}} items</h5>
+                        {% elif items|length == 1 %}
+                            <h5>1 item</h5>
+                        {% else %}
+                            <h5>0 items</h5>
+                        {% endif %}
+                        {# ---------------------------------------------- #}
+                        
+                        {% if items %}
+                            {% for item in items %}
+                                {% if selectedItem and item.id == selectedItem %}
+                                    <li>
+                                        <a href="{{url_for('item_catalog_frontend.item', item_id=item.id, category_id=item.category)}}"
+                                        class="active show nav-link"
+                                        role="tab"
+                                        aria-controls="v-pills-home"
+                                        aria-selected="true">{{item.title}}</a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a href="{{url_for('item_catalog_frontend.item', item_id=item.id, category_id=item.category)}}"
+                                        class="show nav-link"
+                                        role="tab"
+                                        aria-controls="v-pills-home"
+                                        aria-selected="false">{{item.title}}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% if session and success %}
+                            {# the current user is logged in, so displaying the button to add item and to edit the current category #}
+                            {% if selectedCategory %}
+                                <a href="#"
+                                id="addItemButton"
+                                onclick='return addItem()'
+                                data-toggle="tooltip"
+                                title="add a new item to the current category"
+                                data-placement="right">
+                                    <i class="fas fa-plus-square fa-lg"></i>
+                                </a>
+                                <a href="#"
+                                id="editCategoryButton"
+                                onclick='return editCategory()'
+                                data-toggle="tooltip"
+                                title="edit the current category"
+                                data-placement="right">
+                                    <i class="far fa-edit fa-lg"></i>
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+            {# third column #}
+            {# first checking, if an item was selected and an array of items is provided #}
+            {# ---------------------------------------------- #}
+            <div class="col-md-8">
+                {% if selectedItem and items %}
+                    {# if an item was selected display it #}
+                    <div id="errorAlertBox"></div>
+                    {% for item in items %}
+                        {% if item.id == selectedItem %}
+                            <div class="jumbotron">
+                                {# a jumbotron to display the content of the item #}
+                                {# ---------------------------------------------- #}
+                                <div id="jumbotronContent">
+                                    <h2 id="displayTitle">{{ item.title }}</h2>
+                                    <p id="displayDescription">{{ item.description }}</p>
+                                    {% if session and success %}
+                                        {# the current user is logged in, so displaying the button to edit the current item #}
+                                        <a href="#" onclick='return editItem()'>
+                                            <i class="far fa-edit fa-lg"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                {# ---------------------------------------------- #}
+                                
+                                {% if session and success %}
+                                <div class="d-none form-group" id="jumbotronEditItemBox">
+                                    <h3>Edit the current item</h3>
+                                    {# form element for grouping the form together to the edit box #}
+                                    {# ---------------------------------------------- #}
+                                    <form method="PUT" id="itemEditForm" onsubmit='return blockFormSubmission();'>
+                                        {# a dropdown list with the categories listed in it #}
+                                        <p>Category: </p>
+                                        <select name="category" class="form-control" id="editCategory">
+                                            {% if categories %}
+                                                {% for category in categories %}
+                                                    {% if selectedCategory and category.id == selectedCategory %}
+                                                        <option value="{{category.id}}" label="{{category.category}}" selected/>
+                                                    {% else %}
+                                                        <option value="{{category.id}}" label="{{category.category}}"/>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        {# the input element for entering a new title for the current item #}
+                                        <p>Title: </p><input type="text" value={{item.title}} name="title" id="editTitle" class="form-control">
+                                        {# the textarea for entering a new description for the current item #}
+                                        <p>Description: </p><textarea name="description" class="form-control" id="editDescription" rows="5">{{item.description}}</textarea>
+                                    </form>
+                                    {# displaying the buttons to edit and delete the current item #}
+                                    {# only enabled, when clicked on the edit item button below the jumbotronContent element #}
+                                    <a href="#" onclick='return confirmEditItem("{{url_for("item_catalog_api.update_item", item_id=item.id)}}?session_token={{session.session_token}}")'>
+                                        <i class="far fa-edit fa-lg"></i>
+                                    </a>
+                                    <a href="#" onclick='return deleteItem()'>
+                                        <i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+                                    </a>
+                                    <a href="#" onclick='return cancelEditItem()'>
+                                        <i class="fas fa-times fa-lg" aria-hidden="true"></i>
+                                    </a>
+                                    {# ---------------------------------------------- #}
+                                </div>
+
+                                <div class="d-none form-group" id="jumbotronAddItemBox">
+                                    <h3>Add new item to the catalog</h3>
+                                    {# form element for grouping the form together to the add box #}
+                                    {# ---------------------------------------------- #}
+                                    <form method="POST" id="itemAddForm" onsubmit='return blockFormSubmission();'>
+                                        {# a dropdown list with the categories listed in it #}
+                                        <p>Category: </p>
+                                        <select name="category" class="form-control" id="addCategory">
+                                            {% if categories %}
+                                                {% for category in categories %}
+                                                    {% if selectedCategory and category.id == selectedCategory %}
+                                                        <option value="{{category.id}}" label="{{category.category}}" selected/>
+                                                    {% else %}
+                                                        <option value="{{category.id}}" label="{{category.category}}"/>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        {# the input element for entering a new title for the new item #}
+                                        <p>Title: </p><input type="text" name="title" id="addTitle" class="form-control">
+                                        {# the textarea for entering a new description for the new item #}
+                                        <p>Description: </p><textarea name="description" class="form-control" id="addDescription" rows="5"></textarea>
+                                    </form>
+                                    {# a button to save and cancel the newly created item #}
+                                    <a href="#" onclick='return confirmAddItem("{{url_for("item_catalog_api.add_item")}}?session_token={{session.session_token}}")'>
+                                        <i class="far fa-edit fa-lg"></i>
+                                    </a>
+                                    <a href="#" onclick='return cancelAddItem()'><i class="fas fa-times fa-lg"></i></a>
+                                    {# ---------------------------------------------- #}
+                                </div>
+
+                                {# the box for confirming the deletion of the item #}
+                                {# ---------------------------------------------- #}
+                                <div class="d-none form-group" id="jumbotronDeleteItemBox">
+                                    <h3>Confirm delete of the current item</h3>
+                                    <form method="DELETE" id="itemDeleteForm" onsubmit="return blockFormSubmission();">
+                                        <button
+                                        type="button"
+                                        class="btn btn-danger"
+                                        onclick='return confirmDeleteItem("{{url_for("item_catalog_api.delete_item", item_id=item.id)}}?session_token={{session.session_token}}")'>
+                                        Delete
+                                        </button>
+                                        <button type="button" class="btn btn-success" onclick='return cancelDeleteItem()'>Cancel</button>
+                                    </form>
+                                </div>
+                                {# ---------------------------------------------- #}
+
+                                {# the box for editing the current category #}
+                                {# ---------------------------------------------- #}
+                                <div class="d-none form-group" id="jumbotronEditCategoryBox">
+                                    <h3>Edit the current category</h3>
+                                    <form method="PUT" id="categoryAddForm" onsubmit="return blockFormSubmission();">
+                                        {# the input element for entering a new title for the current category #}
+                                        <p>Category Title: </p>
+                                        <input type="text"
+                                        name="title"
+                                        id="editCategoryTitle"
+                                        class="form-control"
+                                        value="{% for category in categories %}{% if selectedCategory and category.id == selectedCategory %}{{category.category}}{% endif %}{% endfor %}"/>
+                                        {# the buttons for saving the edit changes, to cancel and to delete the currentCategory #}
+                                        <a href="#"
+                                        onclick='return confirmEditCategory("{{url_for("item_catalog_api.update_category", category_id=selectedCategory)}}?session_token={{session.session_token}}")'>
+                                            <i class="far fa-edit fa-lg"></i>
+                                        </a>
+                                        <a href="#" onclick='return cancelEditCategory()'><i class="fas fa-times fa-lg"></i></a>
+                                        <a href="#" onclick='return deleteCategory()'>
+                                            <i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+                                        </a>
+                                    </form>
+                                </div>
+                                {# ---------------------------------------------- #}
+
+                                {# the box for adding a new category #}
+                                {# ---------------------------------------------- #}
+                                <div class="d-none form-group" id="jumbotronAddCategoryBox">
+                                    <h3>Add new category to the catalog</h3>
+                                    <form method="POST" id="categoryAddForm" onsubmit="return blockFormSubmission();">
+                                        {# the input element for entering a new title for the new category #}
+                                        <p>Category Title: </p><input type="text" name="title" id="addCategoryTitle" class="form-control"/>
+                                        {# the buttons to add the new category or to cancel #}
+                                        <a href="#" onclick='return confirmAddCategory("{{url_for("item_catalog_api.add_category")}}?session_token={{session.session_token}}")'>
+                                            <i class="far fa-edit fa-lg"></i>
+                                        </a>
+                                        <a href="#" onclick='return cancelAddCategory()'><i class="fas fa-times fa-lg"></i></a>
+                                    </form>
+                                </div>
+                                {# ---------------------------------------------- #}
+
+                                {# the box for deleting the current category #}
+                                {# ---------------------------------------------- #}
+                                <div class="d-none form-group" id="jumbotronDeleteCategoryBox">
+                                    <h3>Confirm delete of the current category</h3>
+                                    <form method="DELETE" id="categoryDeleteForm" onsubmit='return blockFormSubmission();'>
+                                        <button type="button"
+                                        class="btn btn-danger"
+                                        onclick='return confirmDeleteCategory("{{url_for("item_catalog_api.delete_category", category_id=selectedCategory)}}?session_token={{session.session_token}}")'>
+                                        Delete
+                                        </button>
+                                        <button type="button" class="btn btn-success" onclick='return cancelDeleteCategory()'>Cancel</button>
+                                    </form>
+                                </div>
+                                {# ---------------------------------------------- #}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                {# an item was not selected, nor a an array of items was provided #}
+                    {% if session and success %}
+                        {# the specified user is logged in #}
+                        <div id="errorAlertBox"></div>
+                        {% if selectedCategory %}
+                            {# the box for editing the current category #}
+                            {# ---------------------------------------------- #}
+                            <div class="jumbotron d-none" id="jumbotronEditCategoryBox">
+                                <h3>Edit the current category</h3>
+                                <div class="form-group">
+                                    <form method="PUT" id="categoryAddForm" onsubmit="return blockFormSubmission();">
+                                        {# the input element for entering a new title for the current category #}
+                                        <p>Category Title: </p>
+                                        <input type="text"
+                                        name="title"
+                                        id="editCategoryTitle"
+                                        class="form-control"
+                                        value="{% for category in categories %}{% if selectedCategory and category.id == selectedCategory %}{{category.category}}{% endif %}{% endfor %}">
+                                        {# the buttons for saving the edit changes, to cancel and to delete the currentCategory #}
+                                        <a href="#"
+                                        onclick='return confirmEditCategory("{{url_for("item_catalog_api.update_category", category_id=selectedCategory)}}?session_token={{session.session_token}}")'>
+                                            <i class="far fa-edit fa-lg"></i>
+                                        </a>
+                                        <a href="#" onclick='return cancelEditCategory()'><i class="fas fa-times fa-lg"></i></a>
+                                        <a href="#" onclick='return deleteCategory()'>
+                                            <i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+                                        </a>
+                                    </form>
+                                </div>
+                            </div>
+                            {# ---------------------------------------------- #}
+
+                            {# the box for deleting the current category #}
+                            {# ---------------------------------------------- #}
+                            <div class="jumbotron d-none" id="jumbotronDeleteCategoryBox">
+                                <div class="form-group">
+                                    <h3>Confirm Delete of the current category</h3>
+                                    <form method="DELETE" id="categoryDeleteForm" onsubmit="return blockFormSubmission();">
+                                        <button type="button" class="btn btn-danger" onclick='return confirmDeleteCategory("{{url_for("item_catalog_api.delete_category", category_id=selectedCategory)}}?session_token={{session.session_token}}")'>Delete</button>
+                                        <button type="button" class="btn btn-success" onclick='return cancelDeleteCategory()'>Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {# ---------------------------------------------- #}
+                        {% endif %}
+                        <div class="jumbotron d-none" id="jumbotronAddItemBox">
+                            <div class="form-group">
+                                <h3>Add new item to the catalog</h3>
+                                {# form element for grouping the form together to the add box #}
+                                {# ---------------------------------------------- #}
+                                <form method="POST" id="itemAddForm" onsubmit="return blockFormSubmission();">
+                                    {# a dropdown list with the categories listed in it #}
+                                    <p>Category: </p>
+                                    <select name="category" class="form-control" id="addCategory">
+                                            {% if categories %}
+                                                {% for category in categories %}
+                                                    {% if selectedCategory and category.id == selectedCategory %}
+                                                        <option value="{{category.id}}" label="{{category.category}}" selected/>
+                                                    {% else %}
+                                                        <option value="{{category.id}}" label="{{category.category}}"/>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    {# the input element for entering a new title for the new item #}
+                                    <p>Title: </p><input type="text" name="title" id="addTitle" class="form-control">
+                                    {# the textarea for entering a new description for the new item #}
+                                    <p>Description: </p><textarea name="description" class="form-control" id="addDescription" rows="5"></textarea>
+                                </form>
+                                {# a button to save and cancel the newly created item #}
+                                <a href="#" onclick='return confirmAddItem("{{url_for("item_catalog_api.add_item")}}?session_token={{session.session_token}}")'><i class="far fa-edit fa-lg"></i></a>
+                                <a href="#" onclick='return cancelAddItem()'><i class="fas fa-times fa-lg"></i></a>
+                                {# ---------------------------------------------- #}
+                            </div>
+                        </div>
+
+                        <div class="jumbotron d-none" id="jumbotronAddCategoryBox">
+                            {# the box for adding a new category #}
+                            {# ---------------------------------------------- #}
+                            <div class="form-group">
+                                <h3>Add new category to the catalog</h3>
+                                <form method="POST" id="categoryAddForm" onsubmit="return blockFormSubmission();">
+                                    {# the input element for entering a new title for the new category #}
+                                    <p>Category Title: </p><input type="text" name="title" id="addCategoryTitle" class="form-control">
+                                    {# the buttons to add the new category or to cancel #}
+                                    <a href="#" onclick='return confirmAddCategory("{{url_for("item_catalog_api.add_category")}}?session_token={{session.session_token}}")'><i class="far fa-edit fa-lg"></i></a>
+                                    <a href="#" onclick='return cancelAddCategory()'><i class="fas fa-times fa-lg"></i></a>
+                                </form>
+                            </div>
+                            {# ---------------------------------------------- #}
+                        </div>
+                    {% endif %}
+                    {# area to display a error message, if one is provided in the controller #}
+                    {% if error_message %}
+                        <div class="jumbotron">
+                            <div id="jumbotronContent">
+                                <div class="alert alert-danger fade show" role="alert">
+                                    <div>{{error_message}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {# ---------------------------------------------- #}
+            {# end third column #}
+        </div>
+    </div>
+</div>
+{% endblock %}

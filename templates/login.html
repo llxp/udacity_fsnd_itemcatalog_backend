@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('static', filename='login.js')}}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="vertical-center">
+    <div class="jumbotron container">
+        {% if error %}
+            <h3>{{error}}</h3>
+        {% endif %}
+        {% if not success %}
+            <button onclick="login('{{state}}')">Login using Google</button>
+        {% else %}
+            {% if session %}
+                <img src="{{ session.picture }}" width="32" height="32">
+                <div>
+                    <h4>{{ session.username }}</h4>
+                    <p>{{ session.email }}</p>
+                </div>
+                <button onclick="logout('{{state}}', '{{url_for('authentication.gdisconnect')}}')">Logout</button>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
