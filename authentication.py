@@ -119,6 +119,9 @@ def gconnect():
             'email',
             'openid',
             'https://www.googleapis.com/auth/plus.login'])
+        # the redirect uri of the angularJS app is put here also to match
+        # the redirect uri which has triggered the authorization process
+        # in the angularJS app
         oauth_flow.redirect_uri = 'http://localhost:4200/user/gconnect'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError as e:
