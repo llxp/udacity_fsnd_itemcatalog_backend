@@ -51,7 +51,7 @@ base.html  --> master template which is extended using index.html and login.html
 index.html --> template for the start page</br>
 login.html --> template for the login page</br>
 
-#### THis project consists of 9 javascript files:
+#### This project consists of 9 javascript files:
 
 common.js --> code which is shared across the project</br>
 search.js --> code for handling the search in the top middle of the page</br>
