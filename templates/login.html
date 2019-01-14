@@ -6,6 +6,11 @@
 {% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+    <h1 class="d-none" id='searchResultsHeadline'>Search Results</h1>
+    <ul id="searchResults" class="nav navbar-nav nav-pills">
+    </ul>
+</div>
 <div class="vertical-center">
     <div class="jumbotron container">
         {% if error %}

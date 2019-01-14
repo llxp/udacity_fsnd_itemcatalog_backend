@@ -77,7 +77,7 @@ The following actions can only be made, when logged in:<br/>
 ## LICENSE ##
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/llxp/udacity_fsnd_itemcatalog_backend/blob/master/LICENSE) file for details
 
-### Files: ###
+## Files: ##
 
 #### This project consists of 7 python files (in / directory of the project): ####
 
