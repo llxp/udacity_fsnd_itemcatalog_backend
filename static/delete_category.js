@@ -19,7 +19,7 @@ function cancelDeleteCategory() {
 }
 
 function confirmDeleteCategory(url) {
-    cancelDeleteCategory();
+    cancelDeleteCategory(); // function simply just hides the delete box and restores the previous state
 
     // send an ajax request to the server to remove the current category
     request = sendAjaxDELETERequest(url, '');

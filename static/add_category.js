@@ -21,7 +21,7 @@ function cancelAddCategory() {
 }
 
 function confirmAddCategory(url) {
-    cancelAddCategory();
+    cancelAddCategory(); // function simply just hides the add box and restores the previous state
     addCategoryTitle = getElement('addCategoryTitle').value;
     // send an ajax request to the server to add the new category
     request = sendAjaxPOSTRequest(url, 'category='+encodeURI(addCategoryTitle));

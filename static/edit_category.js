@@ -19,8 +19,9 @@ function cancelEditCategory() {
 }
 
 function confirmEditCategory(url) {
-    cancelEditCategory();
+    cancelEditCategory(); // function simply just hides the edit box and restores the previous state
     editCategoryTitle = getElement('editCategoryTitle').value;
+    
     // send an ajax request to the server to save the changes made to the category
     request = sendAjaxPUTRequest(url, 'category='+encodeURI(editCategoryTitle));
     request.addEventListener('error', function(event) {
