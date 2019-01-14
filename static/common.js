@@ -74,10 +74,10 @@ function elementHidden(element) {
 
 
 /*
-// the function is not enabled, because it is not fully working
-// in the disabled state, at least the default tooltips are working
+// the function is not enabled, because it is not fully working.
+// In the disabled state, at least the default tooltips are working
 $(document).ready(function () {
-    $('[data-toggle="tooltip"]').tooltip(); 
+    $('[data-toggle="tooltip"]').tooltip();
 });*/
 
 
