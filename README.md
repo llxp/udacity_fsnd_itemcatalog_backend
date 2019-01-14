@@ -62,3 +62,8 @@ delete_category.js --> code for deleting a selected and edited category</br>
 add_item.js --> code for adding a new item to the catalog</br>
 edit_item.js --> code for editing a selected item</br>
 delete_item.js --> code for deleting a selected and edited item</br>
+
+#### This project consts of 3 css files ####
+style.css --> custom style for the index.html and login.html templates
+boostrap.css --> own copy of the bootstrap.css file because the default flask-bootstrap css file has some errors or is outdated
+font-awesome.css --> own copy of font-awesome
