@@ -108,6 +108,6 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 [delete_item.js](https://github.com/llxp/udacity_fsnd_itemcatalog_backend/blob/master/static/delete_item.js) --> code for deleting a selected and edited item<br/>
 
 #### This project consts of 3 css files (in /static directory of the project) ####
-[style.css](https://github.com/llxp/udacity_fsnd_itemcatalog_backend/blob/master/static/style.css) --> custom style for the index.html and login.html templates
-[boostrap.css](https://github.com/llxp/udacity_fsnd_itemcatalog_backend/blob/master/static/boostrap.css) --> own copy of the bootstrap.css file because the default flask-bootstrap css file has some errors or is outdated
-[font-awesome.css](https://github.com/llxp/udacity_fsnd_itemcatalog_backend/blob/master/static/font-awesome.css) --> own copy of font-awesome
+[style.css](https://github.com/llxp/udacity_fsnd_itemcatalog_backend/blob/master/static/style.css) --> custom style for the index.html and login.html templates<br/>
+[boostrap.css](https://github.com/llxp/udacity_fsnd_itemcatalog_backend/blob/master/static/boostrap.css) --> own copy of the bootstrap.css file because the default flask-bootstrap css file has some errors or is outdated<br/>
+[font-awesome.css](https://github.com/llxp/udacity_fsnd_itemcatalog_backend/blob/master/static/font-awesome.css) --> own copy of font-awesome<br/>
