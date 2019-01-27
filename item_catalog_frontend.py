@@ -4,6 +4,7 @@ from flask import render_template, redirect, url_for
 from flask_cors import cross_origin
 from flask_bootstrap import Bootstrap
 import sys
+import os
 import random
 import string
 import httplib2 as httplib2
@@ -16,7 +17,9 @@ from login_sesssion import LoginSessionItem, LoginSession
 from authentication import check_login, get_new_token, get_session_object
 from authentication import delete_session_object, CLIENT_ID, create_user
 from authentication import generate_random_string, add_session_object
+from constants import REDIRECT_URI_FLASK
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 item_catalog_frontend_blueprint = Blueprint(
     'item_catalog_frontend',
@@ -198,7 +201,7 @@ def gconnect():
     # Obtain authorization code
     code = request.args.get('code')
 
-    current_session_token = login_session['state']
+    current_session_token = login_session.get('state')
     # Validate state token
     if (
         current_session_token is None and
@@ -211,12 +214,12 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope=[
+        oauth_flow = flow_from_clientsecrets(dir_path + '/client_secrets.json', scope=[
             'https://www.googleapis.com/auth/plus.me',
             'email',
             'openid',
             'https://www.googleapis.com/auth/plus.login'])
-        oauth_flow.redirect_uri = 'http://localhost:5000/user/gconnect'
+        oauth_flow.redirect_uri = REDIRECT_URI_FLASK  # 'http://localhost:5000/user/gconnect'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError as e:
         print('error: ' + str(e))
@@ -261,7 +264,7 @@ def gconnect():
         return redirect(url_for('item_catalog_frontend.login'))
 
     # Store the access token in the session for later use.
-    current_session: LoginSessionItem = LoginSessionItem
+    current_session: LoginSessionItem = LoginSessionItem()
     current_session.access_token = credentials.access_token
     current_session.gplus_id = gplus_id
     current_session.session_token = login_session.get('state')

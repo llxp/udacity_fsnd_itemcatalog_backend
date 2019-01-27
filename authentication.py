@@ -16,18 +16,22 @@ from app_init import app, db
 from login_sesssion import LoginSession, LoginSessionItem
 from Models import User
 
+from constants import REDIRECT_URI_ANGULAR
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 app.config['SESSION_TYPE'] = 'SESSION_SQLALCHEMY'
 SESSION_TYPE = 'SESSION_SQLALCHEMY'
 
 CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+    open(dir_path + '/client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Item Catalog"
 
 authentication_blueprint = Blueprint(
     'authentication',
     __name__,
     template_folder='templates')
+
 
 # create global login session for storing user information at runtime
 # used to be compatible with angularJS
@@ -56,7 +60,7 @@ def add_session_object(session_object: LoginSessionItem):
 
 def get_new_token():
     session_token: str = generate_random_string()
-    login_session[session_token] = LoginSessionItem
+    login_session[session_token] = LoginSessionItem()
     login_session[session_token].session_token = session_token
     return session_token
 
@@ -114,7 +118,7 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope=[
+        oauth_flow = flow_from_clientsecrets(dir_path + '/client_secrets.json', scope=[
             'https://www.googleapis.com/auth/plus.me',
             'email',
             'openid',
@@ -122,7 +126,7 @@ def gconnect():
         # the redirect uri of the angularJS app is put here also to match
         # the redirect uri which has triggered the authorization process
         # in the angularJS app
-        oauth_flow.redirect_uri = 'http://localhost:4200/user/gconnect'
+        oauth_flow.redirect_uri = REDIRECT_URI_ANGULAR
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError as e:
         response = make_response(
@@ -241,9 +245,13 @@ def gdisconnect():
 def enumerate_session_tokens():
     session_token = request.args.get('session_token')
     tokens = []
-    if login_session[session_token] is not None:
+    if (
+        login_session[session_token] is not None and
+        check_login(session_token)):
         username = login_session[session_token].username
         for key in login_session.keys():
+            print("key:")
+            print(key)
             session: LoginSessionItem = login_session[key]
             if session is not None:
                 if session.username == username and session.logged_in is True:
