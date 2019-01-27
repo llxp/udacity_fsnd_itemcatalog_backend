@@ -6,6 +6,7 @@ import httplib2
 import requests
 from flask import request, json, make_response, Response, send_from_directory
 from flask_cors import cross_origin
+from flask_bootstrap import Bootstrap
 
 from Models import CatalogCategory, CatalogItem, User
 from app_init import app, db
@@ -23,8 +24,11 @@ app.register_blueprint(item_catalog_api_blueprint)
 app.register_blueprint(item_catalog_frontend_blueprint)
 
 FLASK_APP = app
+#Bootstrap(app)
+setAppObject(app)
+db.create_all()
+
 if __name__ == '__main__':
-    db.create_all()
-    setAppObject(app)
-    app.debug = True
-    app.run()
+#    db.create_all()
+#    app.debug = True
+    app.run(host= '0.0.0.0')
