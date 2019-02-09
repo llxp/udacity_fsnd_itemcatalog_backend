@@ -22,3 +22,5 @@ SqlAlchemySessionInterface(
     key_prefix='session_')
 
 APPLICATION_NAME = "Item Catalog"
+
+db.create_all()

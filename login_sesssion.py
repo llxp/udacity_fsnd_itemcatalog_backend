@@ -1,12 +1,10 @@
-import app_init
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.orm import load_only
 from flask import json
-
-app_init.db.create_all()
+import app_init
 
 class LoginSessionItem(app_init.db.Model):
-    __tablename__: str = 'SESSION'
+    __tablename__: str = 'LoginSession'
     id: int = Column(Integer, primary_key=True)
     access_token: str = Column(String)
     gplus_id: str = Column(String)
@@ -63,3 +61,6 @@ class LoginSession:
         print(keys_list)
         return keys_list
         # return self.session_tokens.keys()
+
+
+app_init.db.create_all()

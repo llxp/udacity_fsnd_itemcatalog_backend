@@ -60,8 +60,9 @@ def add_session_object(session_object: LoginSessionItem):
 
 def get_new_token():
     session_token: str = generate_random_string()
-    login_session[session_token] = LoginSessionItem()
-    login_session[session_token].session_token = session_token
+    new_session_item: LoginSessionItem = LoginSessionItem()
+    new_session_item.session_token = session_token
+    login_session[session_token] = new_session_item
     return session_token
 
 
@@ -132,6 +133,7 @@ def gconnect():
         response = make_response(
             json.dumps('Failed to upgrade the authorization code.'), 401)
         response.headers['Content-Type'] = 'application/json'
+        print("error upgrading the token")
         return response
 
     # Check that the access token is valid.
@@ -191,6 +193,8 @@ def gconnect():
                 current_session.username)
 
     current_session.logged_in = True
+
+    add_session_object(current_session)
 
     response = make_response(json.dumps('User sucessfully connected.'), 200)
     response.headers['Content-Type'] = 'application/json'
